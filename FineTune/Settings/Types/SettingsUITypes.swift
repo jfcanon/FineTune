@@ -10,6 +10,7 @@ enum MenuBarIconStyle: String, Codable, CaseIterable, Identifiable {
     case device = "Device"
     case waveform = "Waveform"
     case equalizer = "Equalizer"
+    case monochrome = "Monochrome"
 
     var id: String { rawValue }
 
@@ -21,6 +22,7 @@ enum MenuBarIconStyle: String, Codable, CaseIterable, Identifiable {
         case .device: return "headphones"
         case .waveform: return "waveform"
         case .equalizer: return "slider.vertical.3"
+        case .monochrome: return "speaker.fill"
         }
     }
 

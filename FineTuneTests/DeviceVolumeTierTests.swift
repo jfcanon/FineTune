@@ -394,6 +394,87 @@ struct SettingsMigrationV10toV11Tests {
     }
 }
 
+// MARK: - v12 → v13 Migration (MenuBarIconStyle.monochrome)
+
+@Suite("SettingsManager — v12 → v13 migration")
+@MainActor
+struct SettingsMigrationV12toV13Tests {
+    /// Inline v12 fixture: the shape a user upgrading from the previous release
+    /// will have on disk. The menuBarIconStyle is set to "Speaker" (a valid v12 value).
+    private let v12Json = #"""
+    {
+      "version": 12,
+      "appVolumes": {},
+      "appSettings": {
+        "defaultNewAppVolume": 1.0,
+        "launchAtLogin": false,
+        "menuBarIconStyle": "Speaker",
+        "lockInputDevice": true,
+        "showDeviceDisconnectAlerts": true,
+        "loudnessCompensationEnabled": false,
+        "loudnessEqualizationEnabled": false,
+        "mediaKeyControlEnabled": true,
+        "hudStyle": "tahoe"
+      }
+    }
+    """#
+
+    @Test("Decoding a v12 settings.json uses the Speaker style (backward compatible)")
+    func decodeV12BackwardCompatible() throws {
+        let data = Data(v12Json.utf8)
+        let decoded = try JSONDecoder().decode(SettingsManager.Settings.self, from: data)
+
+        #expect(decoded.version == 12)
+        #expect(decoded.appSettings.menuBarIconStyle == .speaker)
+    }
+
+    @Test("Re-encode after v12 decode bumps to v13 on a fresh Settings instance")
+    func defaultSettingsVersionIsThirteen() {
+        let fresh = SettingsManager.Settings()
+        #expect(fresh.version == 13)
+    }
+
+    @Test("SettingsManager loads from disk without throwing for a v12 file on-disk")
+    func loadV12FromDisk() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let url = tempDir.appendingPathComponent("settings.json")
+        try Data(v12Json.utf8).write(to: url, options: .atomic)
+
+        let manager = SettingsManager(directory: tempDir)
+        #expect(manager.appSettings.menuBarIconStyle == .speaker)
+    }
+
+    @Test("v13 fixture decodes with Monochrome menu bar icon style")
+    func decodeV13Fixture() throws {
+        let fixtureURL = Bundle(for: type(of: self))
+            .url(forResource: "settings-v13", withExtension: "json")
+        let data = try Data(contentsOf: fixtureURL!)
+        let decoded = try JSONDecoder().decode(SettingsManager.Settings.self, from: data)
+        #expect(decoded.version == 13)
+        #expect(decoded.appSettings.menuBarIconStyle == .monochrome)
+        #expect(decoded.appSettings.mediaKeyControlEnabled == true)
+        #expect(decoded.appSettings.hudStyle == .tahoe)
+    }
+
+    @Test("Unknown menuBarIconStyle string decodes to .default (defensive)")
+    func unknownStyleFallsBackToDefault() throws {
+        let json = #"""
+        {
+          "version": 13,
+          "appVolumes": {},
+          "appSettings": {
+            "menuBarIconStyle": "UnknownStyle"
+          }
+        }
+        """#
+        let data = Data(json.utf8)
+        let decoded = try JSONDecoder().decode(SettingsManager.Settings.self, from: data)
+        #expect(decoded.appSettings.menuBarIconStyle == .default)
+    }
+}
+
 // MARK: - SettingsManager round-trip extension
 
 @Suite("SettingsManager.Settings — deviceVolumeTierOverride round-trip")

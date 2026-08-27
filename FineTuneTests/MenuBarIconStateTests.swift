@@ -221,6 +221,35 @@ struct NonSpeakerBaselineTests {
     }
 }
 
+@Suite("MenuBarIconState.baseline — Monochrome style (static speaker)")
+struct MonochromeBaselineTests {
+
+    @Test("Unmuted at any volume shows speaker.fill (no wave bars)")
+    func monochromeUnmutedShowsStaticSpeaker() {
+        let expected = MenuBarIconState.staticBaseline(.systemSymbol("speaker.fill"))
+        for v in [Float(0.0), 0.25, 0.5, 0.75, 1.0] {
+            #expect(MenuBarIconState.baseline(style: .monochrome, volume: v, muted: false) == expected, "volume=\(v)")
+        }
+    }
+
+    @Test("Muted shows speaker.slash.fill")
+    func monochromeMutedShowsSlash() {
+        for v in [Float(0.0), 0.5, 1.0] {
+            let state = MenuBarIconState.baseline(style: .monochrome, volume: v, muted: true)
+            #expect(state == .speakerMuted, "volume=\(v)")
+        }
+    }
+
+    @Test("Monochrome ignores volume (always shows filled speaker when unmuted)")
+    func monochromeIgnoresVolume() {
+        let expected = MenuBarIconState.staticBaseline(.systemSymbol("speaker.fill"))
+        let state1 = MenuBarIconState.baseline(style: .monochrome, volume: 0.0, muted: false)
+        let state2 = MenuBarIconState.baseline(style: .monochrome, volume: 1.0, muted: false)
+        #expect(state1 == expected)
+        #expect(state2 == expected)
+    }
+}
+
 @Suite("MenuBarIconState — consistency with MenuBarIconStyle.iconName")
 struct StyleIconNameConsistencyTests {
 
@@ -250,5 +279,11 @@ struct StyleIconNameConsistencyTests {
     func deviceMatchesDefaultIconName() {
         let baseline = MenuBarIconState.baseline(style: .device, volume: 0.5, muted: false)
         #expect(baseline.image == .systemSymbol(MenuBarIconStyle.device.iconName))
+    }
+
+    @Test(".monochrome baseline image matches MenuBarIconStyle.monochrome.iconName")
+    func monochromeMatches() {
+        let baseline = MenuBarIconState.baseline(style: .monochrome, volume: 0.5, muted: false)
+        #expect(baseline.image == .systemSymbol(MenuBarIconStyle.monochrome.iconName))
     }
 }
