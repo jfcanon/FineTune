@@ -1,0 +1,42 @@
+name: Package (unsigned .app)
+
+# Builds a runnable, UNSIGNED FineTune.app from this fork's main and uploads it
+# as a downloadable artifact. No Apple signing secrets required. Manual trigger.
+on:
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build unsigned Release app
+        run: |
+          xcodebuild build \
+            -project FineTune.xcodeproj \
+            -scheme FineTune \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+      - name: Locate and stage the .app
+        run: |
+          APP=$(find build/Build/Products -maxdepth 2 -name 'FineTune.app' -type d | head -1)
+          echo "Found: $APP"
+          mkdir -p out
+          cp -R "$APP" out/
+
+      - name: Upload FineTune.app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FineTune-app-unsigned
+          path: out/FineTune.app
+          retention-days: 14
