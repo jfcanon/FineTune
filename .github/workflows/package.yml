@@ -1,7 +1,9 @@
 name: Package (unsigned .app)
 
-# Builds a runnable, UNSIGNED FineTune.app from this fork's main and uploads it
-# as a downloadable artifact. No Apple signing secrets required. Manual trigger.
+# Builds a runnable FineTune.app from this fork's main, ad-hoc signs it (required
+# on Apple Silicon or the OS reports the app as "damaged"), and ships it as a DMG
+# (a raw .app uploaded as an artifact gets its bundle mangled by zipping).
+# No Apple Developer signing secrets required. Manual trigger.
 on:
   workflow_dispatch:
 
@@ -18,25 +20,34 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Build unsigned Release app
+      - name: Build (ad-hoc signed Release)
         run: |
           xcodebuild build \
             -project FineTune.xcodeproj \
             -scheme FineTune \
             -configuration Release \
             -derivedDataPath build \
-            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
 
-      - name: Locate and stage the .app
+      - name: Ad-hoc sign the bundle deeply
         run: |
           APP=$(find build/Build/Products -maxdepth 2 -name 'FineTune.app' -type d | head -1)
-          echo "Found: $APP"
-          mkdir -p out
-          cp -R "$APP" out/
+          echo "App: $APP"
+          codesign --force --deep --sign - "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP" || true
 
-      - name: Upload FineTune.app artifact
+      - name: Build DMG
+        run: |
+          APP=$(find build/Build/Products -maxdepth 2 -name 'FineTune.app' -type d | head -1)
+          mkdir -p dmgroot
+          cp -R "$APP" dmgroot/
+          ln -s /Applications dmgroot/Applications
+          hdiutil create -volname "FineTune" -srcfolder dmgroot -ov -format UDZO FineTune.dmg
+          echo "Built DMG:"; ls -lh FineTune.dmg
+
+      - name: Upload FineTune.dmg artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FineTune-app-unsigned
-          path: out/FineTune.app
+          name: FineTune-dmg-unsigned
+          path: FineTune.dmg
           retention-days: 14
