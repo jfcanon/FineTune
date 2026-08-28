@@ -77,6 +77,9 @@ extension MenuBarIconState {
             return .staticBaseline(.systemSymbol("waveform"))
         case .equalizer:
             return .staticBaseline(.systemSymbol("slider.vertical.3"))
+        case .monochrome:
+            if muted { return .speakerMuted }
+            return .staticBaseline(.systemSymbol("speaker.fill"))
         }
     }
 }
