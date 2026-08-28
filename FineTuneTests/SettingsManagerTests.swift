@@ -424,9 +424,9 @@ struct DeviceIconOverrideTests {
 @Suite("MenuBarIconStyle — Enumeration")
 struct MenuBarIconStyleTests {
 
-    @Test("allCases has 5 styles")
+    @Test("allCases has 6 styles")
     func allCasesCount() {
-        #expect(MenuBarIconStyle.allCases.count == 5)
+        #expect(MenuBarIconStyle.allCases.count == 6)
     }
 
     @Test("Only 'default' is not a system symbol")
@@ -436,6 +436,7 @@ struct MenuBarIconStyleTests {
         #expect(MenuBarIconStyle.device.isSystemSymbol)
         #expect(MenuBarIconStyle.waveform.isSystemSymbol)
         #expect(MenuBarIconStyle.equalizer.isSystemSymbol)
+        #expect(MenuBarIconStyle.monochrome.isSystemSymbol)
     }
 
     @Test("Every style has a non-empty icon name")
