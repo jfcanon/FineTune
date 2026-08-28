@@ -328,10 +328,10 @@ struct SettingsMigrationV10toV11Tests {
         #expect(decoded.softwareDeviceSavedVolumes.isEmpty)
     }
 
-    @Test("Re-encode after v10 decode bumps to v12 on a fresh Settings instance")
-    func defaultSettingsVersionIsTwelve() {
+    @Test("Re-encode after v10 decode bumps to v13 on a fresh Settings instance")
+    func defaultSettingsVersionIsThirteen() {
         let fresh = SettingsManager.Settings()
-        #expect(fresh.version == 12)
+        #expect(fresh.version == 13)
         #expect(fresh.deviceVolumeTierOverride.isEmpty)
     }
 
@@ -448,9 +448,24 @@ struct SettingsMigrationV12toV13Tests {
 
     @Test("v13 fixture decodes with Monochrome menu bar icon style")
     func decodeV13Fixture() throws {
-        let fixtureURL = Bundle(for: type(of: self))
-            .url(forResource: "settings-v13", withExtension: "json")
-        let data = try Data(contentsOf: fixtureURL!)
+        let v13Json = #"""
+        {
+          "version": 13,
+          "appVolumes": {},
+          "appSettings": {
+            "defaultNewAppVolume": 1.0,
+            "launchAtLogin": false,
+            "menuBarIconStyle": "Monochrome",
+            "lockInputDevice": true,
+            "showDeviceDisconnectAlerts": true,
+            "loudnessCompensationEnabled": false,
+            "loudnessEqualizationEnabled": false,
+            "mediaKeyControlEnabled": true,
+            "hudStyle": "tahoe"
+          }
+        }
+        """#
+        let data = Data(v13Json.utf8)
         let decoded = try JSONDecoder().decode(SettingsManager.Settings.self, from: data)
         #expect(decoded.version == 13)
         #expect(decoded.appSettings.menuBarIconStyle == .monochrome)
