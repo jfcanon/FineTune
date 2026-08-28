@@ -11,6 +11,7 @@ Control FineTune from Terminal, shell scripts, [Shortcuts](https://support.apple
 | Set mute | `finetune://set-mute?app=BUNDLE_ID&muted=true` | Mute or unmute an app |
 | Toggle mute | `finetune://toggle-mute?app=BUNDLE_ID` | Toggle mute state |
 | Set device | `finetune://set-device?app=BUNDLE_ID&device=DEVICE_UID` | Route an app to a specific output |
+| Set EQ | `finetune://set-eq?app=BUNDLE_ID&preset=PRESET` | Apply an EQ preset (flat, rock, gaming, etc.) |
 | Reset | `finetune://reset` | Reset all apps to 100% and unmuted |
 
 ## Examples
@@ -30,6 +31,12 @@ open "finetune://step-volume?app=com.hnc.Discord&direction=down"
 
 # Route an app to a specific device
 open "finetune://set-device?app=com.spotify.client&device=YOUR_DEVICE_UID"
+
+# Apply a Rock EQ preset to Spotify
+open "finetune://set-eq?app=com.spotify.client&preset=rock"
+
+# Apply a Gaming EQ preset to a game
+open "finetune://set-eq?app=com.game.example&preset=gaming"
 
 # Reset everything
 open "finetune://reset"

@@ -302,6 +302,36 @@ enum DesignTokens {
 
         /// Inactive tile in Classic HUD segment row
         static let hudTileInactive: Color = .primary.opacity(0.2)
+
+        // MARK: HUD (Minimal Variant)
+
+        /// Minimal HUD background fill
+        static let minimalHudBackground = dynamicColor(
+            name: "minimalHudBackground",
+            light: NSColor.white.withAlphaComponent(0.85),
+            dark: NSColor.black.withAlphaComponent(0.7)
+        )
+
+        /// Minimal HUD accent for volume bar fill
+        static let minimalHudAccent: Color = .accentColor
+
+        /// Minimal HUD text color
+        static let minimalHudText: Color = .primary
+
+        // MARK: HUD (Compact Variant)
+
+        /// Compact HUD background fill
+        static let compactHudBackground = dynamicColor(
+            name: "compactHudBackground",
+            light: NSColor.white.withAlphaComponent(0.9),
+            dark: NSColor.black.withAlphaComponent(0.8)
+        )
+
+        /// Compact HUD volume indicator active
+        static let compactHudIndicatorActive: Color = .primary.opacity(0.8)
+
+        /// Compact HUD volume indicator inactive
+        static let compactHudIndicatorInactive: Color = .primary.opacity(0.2)
     }
 
     // MARK: - Typography
@@ -342,6 +372,20 @@ enum DesignTokens {
 
         /// Settings row description (11pt regular, tertiary)
         static let rowDescription = Font.system(size: 11, weight: .regular)
+
+        // MARK: HUD Typography
+
+        /// Minimal HUD device name (12pt semibold)
+        static let hudDeviceName = Font.system(size: 12, weight: .semibold)
+
+        /// Minimal HUD percentage (10pt medium, monospaced)
+        static let hudPercentage = Font.system(size: 10, weight: .medium, design: .monospaced)
+
+        /// Compact HUD label (9pt regular)
+        static let compactHudLabel = Font.system(size: 9, weight: .regular)
+
+        /// Compact HUD value (11pt semibold, monospaced)
+        static let compactHudValue = Font.system(size: 11, weight: .semibold, design: .monospaced)
     }
 
     // MARK: - Spacing (standard 1× multiplier)
@@ -457,6 +501,32 @@ enum DesignTokens {
         /// Settings picker width
         static let settingsPickerWidth: CGFloat = 120
 
+        // MARK: HUD Variants
+
+        /// Minimal HUD width
+        static let minimalHudWidth: CGFloat = 240
+
+        /// Minimal HUD height
+        static let minimalHudHeight: CGFloat = 48
+
+        /// Minimal HUD corner radius
+        static let minimalHudCornerRadius: CGFloat = 16
+
+        /// Minimal HUD volume bar height
+        static let minimalHudBarHeight: CGFloat = 4
+
+        /// Compact HUD width
+        static let compactHudWidth: CGFloat = 160
+
+        /// Compact HUD height
+        static let compactHudHeight: CGFloat = 36
+
+        /// Compact HUD corner radius
+        static let compactHudCornerRadius: CGFloat = 12
+
+        /// Compact HUD indicator dot size
+        static let compactHudDotSize: CGFloat = 6
+
     }
 
     // MARK: - Animation (smooth style - macOS-like springs)
@@ -470,6 +540,24 @@ enum DesignTokens {
 
         /// VU meter level change
         static let vuMeterLevel = SwiftUI.Animation.linear(duration: 0.05)
+
+        /// HUD show animation (fast fade-in)
+        static let hudShow = SwiftUI.Animation.easeOut(duration: 0.12)
+
+        /// HUD hide animation (quick fade-out)
+        static let hudHide = SwiftUI.Animation.easeInOut(duration: 0.11)
+
+        /// Slider value change (responsive, snappy)
+        static let sliderChange = SwiftUI.Animation.spring(response: 0.15, dampingFraction: 0.9)
+
+        /// EQ band adjustment (smooth, slightly bouncy)
+        static let eqBandAdjust = SwiftUI.Animation.spring(response: 0.25, dampingFraction: 0.75)
+
+        /// Preset switch (gentle transition)
+        static let presetSwitch = SwiftUI.Animation.easeInOut(duration: 0.2)
+
+        /// Device routing change (instant feedback)
+        static let deviceRoute = SwiftUI.Animation.easeOut(duration: 0.1)
     }
 
     // MARK: - Timing

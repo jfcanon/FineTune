@@ -11,9 +11,9 @@ import Foundation
 @Suite("EQPreset — Catalog")
 struct EQPresetCatalogTests {
 
-    @Test("allCases count is 20")
+    @Test("allCases count is 22")
     func allCasesCount() {
-        #expect(EQPreset.allCases.count == 20)
+        #expect(EQPreset.allCases.count == 22)
     }
 
     @Test("Every preset has a non-empty name")
@@ -192,7 +192,7 @@ struct EQSettingsFrequencyTests {
     func frequenciesMonotonic() {
         for i in 1..<EQSettings.frequencies.count {
             #expect(EQSettings.frequencies[i] > EQSettings.frequencies[i - 1],
-                    "Frequency[\(i)] (\(EQSettings.frequencies[i])) should be > frequency[\(i-1)] (\(EQSettings.frequencies[i-1]))")
+                    "Frequency[\(i)] (\(EQSettings.frequencies[i])) should be > frequency[\(i-1)] (\(EQSettings.frequencies[i-1])")
         }
     }
 
@@ -208,6 +208,64 @@ struct EQSettingsFrequencyTests {
     func frequenciesMatchISO() {
         let expected: [Double] = [31.25, 62.5, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]
         #expect(EQSettings.frequencies == expected)
+    }
+}
+
+// MARK: - EQPreset — New Preset Validation
+
+@Suite("EQPreset — New preset contracts")
+struct EQPresetNewPresetTests {
+
+    @Test("Gaming preset exists and has correct category")
+    func gamingPresetExists() {
+        let preset = EQPreset.gaming
+        #expect(preset.category == .gaming)
+        #expect(preset.name == "Gaming")
+    }
+
+    @Test("Cinematic preset exists and has correct category")
+    func cinematicPresetExists() {
+        let preset = EQPreset.cinematic
+        #expect(preset.category == .media)
+        #expect(preset.name == "Cinematic")
+    }
+
+    @Test("Gaming preset has 10 bands")
+    func gamingPresetBands() {
+        #expect(EQPreset.gaming.settings.bandGains.count == EQSettings.bandCount)
+    }
+
+    @Test("Cinematic preset has 10 bands")
+    func cinematicPresetBands() {
+        #expect(EQPreset.cinematic.settings.bandGains.count == EQSettings.bandCount)
+    }
+
+    @Test("Gaming preset gains are within range")
+    func gamingPresetGainsInRange() {
+        for (index, gain) in EQPreset.gaming.settings.bandGains.enumerated() {
+            #expect(gain >= EQSettings.minGainDB && gain <= EQSettings.maxGainDB,
+                    "Gaming preset band \(index) gain \(gain) out of range")
+        }
+    }
+
+    @Test("Cinematic preset gains are within range")
+    func cinematicPresetGainsInRange() {
+        for (index, gain) in EQPreset.cinematic.settings.bandGains.enumerated() {
+            #expect(gain >= EQSettings.minGainDB && gain <= EQSettings.maxGainDB,
+                    "Cinematic preset band \(index) gain \(gain) out of range")
+        }
+    }
+
+    @Test("Gaming preset has unique gains (not all zeros)")
+    func gamingPresetNotFlat() {
+        let gains = EQPreset.gaming.settings.bandGains
+        #expect(!gains.allSatisfy { $0 == 0 }, "Gaming preset should not be flat")
+    }
+
+    @Test("Cinematic preset has unique gains (not all zeros)")
+    func cinematicPresetNotFlat() {
+        let gains = EQPreset.cinematic.settings.bandGains
+        #expect(!gains.allSatisfy { $0 == 0 }, "Cinematic preset should not be flat")
     }
 }
 

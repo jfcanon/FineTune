@@ -24,8 +24,11 @@ enum EQPreset: String, CaseIterable, Identifiable {
     case rnb
     case deep
     case acoustic
+    // Gaming
+    case gaming
     // Media
     case movie
+    case cinematic
 
     var id: String { rawValue }
 
@@ -36,6 +39,7 @@ enum EQPreset: String, CaseIterable, Identifiable {
         case speech = "Speech"
         case listening = "Listening"
         case music = "Music"
+        case gaming = "Gaming"
         case media = "Media"
 
         var id: String { rawValue }
@@ -51,7 +55,9 @@ enum EQPreset: String, CaseIterable, Identifiable {
             return .listening
         case .rock, .pop, .electronic, .jazz, .classical, .hipHop, .rnb, .deep, .acoustic:
             return .music
-        case .movie:
+        case .gaming:
+            return .gaming
+        case .movie, .cinematic:
             return .media
         }
     }
@@ -81,7 +87,9 @@ enum EQPreset: String, CaseIterable, Identifiable {
         case .rnb: return "R&B"
         case .deep: return "Deep"
         case .acoustic: return "Acoustic"
+        case .gaming: return "Gaming"
         case .movie: return "Movie"
+        case .cinematic: return "Cinematic"
         }
     }
 
@@ -153,10 +161,18 @@ enum EQPreset: String, CaseIterable, Identifiable {
             // Warm low-mids, natural sparkle
             return EQSettings(bandGains: [0, 1, 2, 2, 1, 0, 1, 2, 2, 1])
 
+        // MARK: - Gaming
+        case .gaming:
+            // Boosted sub-bass for explosions, clear mids for dialogue, crisp highs for spatial cues
+            return EQSettings(bandGains: [5, 4, 2, -1, -1, 1, 3, 4, 3, 2])
+
         // MARK: - Media
         case .movie:
             // Cinematic: bass rumble, dialogue clarity, effects detail
             return EQSettings(bandGains: [4, 4, 3, -1, -1, 1, 3, 3, 2, 1])
+        case .cinematic:
+            // Wide soundstage: deep bass, elevated highs for immersive experience
+            return EQSettings(bandGains: [5, 5, 3, -1, -2, 0, 2, 4, 4, 3])
         }
     }
 }

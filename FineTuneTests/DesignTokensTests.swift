@@ -117,3 +117,54 @@ struct DesignTokensTimingTests {
         #expect(DesignTokens.Timing.vuMeterPeakHold > 0)
     }
 }
+
+// MARK: - HUD Dimensions
+
+@Suite("DesignTokens — HUD variant dimensions")
+struct DesignTokensHUDDimensionTests {
+
+    @Test("Minimal HUD dimensions are positive and reasonable")
+    func minimalHUDDimensions() {
+        #expect(DesignTokens.Dimensions.minimalHudWidth > 100)
+        #expect(DesignTokens.Dimensions.minimalHudWidth < 400)
+        #expect(DesignTokens.Dimensions.minimalHudHeight > 20)
+        #expect(DesignTokens.Dimensions.minimalHudHeight < 100)
+        #expect(DesignTokens.Dimensions.minimalHudCornerRadius > 0)
+        #expect(DesignTokens.Dimensions.minimalHudBarHeight > 0)
+    }
+
+    @Test("Compact HUD dimensions are positive and reasonable")
+    func compactHUDDimensions() {
+        #expect(DesignTokens.Dimensions.compactHudWidth > 80)
+        #expect(DesignTokens.Dimensions.compactHudWidth < 300)
+        #expect(DesignTokens.Dimensions.compactHudHeight > 15)
+        #expect(DesignTokens.Dimensions.compactHudHeight < 60)
+        #expect(DesignTokens.Dimensions.compactHudCornerRadius > 0)
+        #expect(DesignTokens.Dimensions.compactHudDotSize > 0)
+    }
+
+    @Test("Minimal HUD is wider than compact HUD")
+    func minimalHUDWiderThanCompact() {
+        #expect(DesignTokens.Dimensions.minimalHudWidth > DesignTokens.Dimensions.compactHudWidth)
+    }
+
+    @Test("Minimal HUD is taller than compact HUD")
+    func minimalHudTallerThanCompact() {
+        #expect(DesignTokens.Dimensions.minimalHudHeight > DesignTokens.Dimensions.compactHudHeight)
+    }
+}
+
+// MARK: - HUD Typography
+
+@Suite("DesignTokens — HUD typography")
+struct DesignTokensHUDTypographyTests {
+
+    @Test("HUD typography tokens exist and are accessible")
+    func hudTypographyExists() {
+        // Just verifying these compile and are accessible
+        _ = DesignTokens.Typography.hudDeviceName
+        _ = DesignTokens.Typography.hudPercentage
+        _ = DesignTokens.Typography.compactHudLabel
+        _ = DesignTokens.Typography.compactHudValue
+    }
+}
