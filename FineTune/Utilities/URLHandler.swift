@@ -54,6 +54,8 @@ final class URLHandler {
         // Other actions
         case "set-device":
             handleSetDevice(queryItems: queryItems)
+        case "set-eq":
+            handleSetEQ(queryItems: queryItems)
         case "reset":
             handleReset(queryItems: queryItems)
         default:
@@ -256,6 +258,35 @@ final class URLHandler {
 
         audioEngine.setDevice(for: app, deviceUID: deviceUID)
         logger.info("Routed \(app.name) to device \(deviceUID)")
+    }
+
+    /// Apply an EQ preset to an app
+    /// URL format: finetune://set-eq?app=com.a&preset=rock
+    private func handleSetEQ(queryItems: [URLQueryItem]) {
+        guard let appIdentifier = queryItems.first(where: { $0.name == "app" })?.value else {
+            logger.error("set-eq: missing app parameter")
+            return
+        }
+
+        guard let presetRawValue = queryItems.first(where: { $0.name == "preset" })?.value else {
+            logger.error("set-eq: missing preset parameter")
+            return
+        }
+
+        guard let preset = EQPreset(rawValue: presetRawValue) else {
+            logger.warning("set-eq: unknown preset '\(presetRawValue)'")
+            return
+        }
+
+        guard findApp(by: appIdentifier) != nil else {
+            logger.warning("set-eq: app not found '\(appIdentifier)'")
+            return
+        }
+
+        var settings = preset.settings
+        settings.isEnabled = true
+        audioEngine.settingsManager.setEQSettings(settings, for: appIdentifier)
+        logger.info("Applied EQ preset \(preset.name) to \(appIdentifier)")
     }
 
     /// Reset apps to 100% volume and unmute
